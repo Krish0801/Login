@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Login</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+
+
+        <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
+        <string name="facebook_application_id" translatable="false">206542932016678</string>
+        <string name="facebook_login_protocol_scheme" translatable="false">206542932016678</string>
+
+    <string name="facebook_client_token">b939bdef18a544cebdb8f8f027380873</string>
+
+
+
+</resources>
