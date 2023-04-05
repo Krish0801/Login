@@ -52,6 +52,7 @@ class LoginActivity : AppCompatActivity() {
         val password = binding.password
         val login = binding.login
         val loading = binding.loading
+        val signout = binding.signout
 
         // Choose authentication providers
         val providers = arrayListOf(
@@ -73,7 +74,9 @@ class LoginActivity : AppCompatActivity() {
             val loginState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
-            login.isEnabled = loginState.isDataValid
+            if (login != null) {
+                login.isEnabled = loginState.isDataValid
+            }
 
             if (loginState.usernameError != null) {
                 username.error = getString(loginState.usernameError)
@@ -125,11 +128,37 @@ class LoginActivity : AppCompatActivity() {
                 false
             }
 
-            login.setOnClickListener {
-                loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString())
+            if (login != null) {
+                login.setOnClickListener {
+                    loading.visibility = View.VISIBLE
+                    loginViewModel.login(username.text.toString(), password.text.toString())
+                }
             }
         }
+        
+
+        binding.signout?.setOnClickListener {
+            AuthUI.getInstance()
+                .signOut(this@LoginActivity)
+                .addOnCompleteListener {
+                    startLogin(
+                        arrayListOf(
+                            AuthUI.IdpConfig.EmailBuilder().build(),
+                            AuthUI.IdpConfig.GoogleBuilder().build(),
+                            AuthUI.IdpConfig.FacebookBuilder().build()
+                        )
+                    )
+                }
+        }
+    }
+
+    private fun startLogin(providers: ArrayList<AuthUI.IdpConfig>) {
+        // Create and launch sign-in intent
+        val signInIntent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(providers)
+            .build()
+        signInLauncher.launch(signInIntent)
     }
 
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
