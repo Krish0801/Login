@@ -1,31 +1,34 @@
 package com.example.login.ui.login
 
+
 import android.app.Activity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import android.content.ContentValues.TAG
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
-import com.example.login.databinding.ActivityLoginBinding
-
-
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.login.R
+import com.example.login.databinding.ActivityLoginBinding
 import com.facebook.FacebookSdk
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 
 class LoginActivity : AppCompatActivity() {
 
@@ -145,6 +148,7 @@ class LoginActivity : AppCompatActivity() {
                         FirebaseAnalytics.Param.CONTENT_TYPE to "ExistingUser"
                     )
                     )
+                    //throw RuntimeException("Test Crash")
                 }
             }
 
@@ -164,6 +168,21 @@ class LoginActivity : AppCompatActivity() {
                     )
                 }
         }
+
+        Firebase.messaging.getToken().addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+            //val msg = getString(R.string.msg_token_fmt, token)
+            Log.d("FirebaseTokenNotifications", token)
+            Toast.makeText(baseContext, "Recieved $token", Toast.LENGTH_SHORT).show()
+        })
 
 
     }
