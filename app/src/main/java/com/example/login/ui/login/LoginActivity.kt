@@ -12,6 +12,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import com.example.login.databinding.ActivityLoginBinding
 
 
@@ -20,6 +21,8 @@ import com.facebook.FacebookSdk
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -28,7 +31,8 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var auth: FirebaseAuth;
+    private lateinit var auth: FirebaseAuth
+    private lateinit var analytics: FirebaseAnalytics
 
     // See: https://developer.android.com/training/basics/intents/result
     private val signInLauncher = registerForActivityResult(
@@ -47,12 +51,14 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = Firebase.auth
+        analytics = Firebase.analytics
 
         val username = binding.username
         val password = binding.password
         val login = binding.login
         val loading = binding.loading
-        val signout = binding.signout
+        val signOut = binding.signout
+
 
         // Choose authentication providers
         val providers = arrayListOf(
@@ -132,8 +138,16 @@ class LoginActivity : AppCompatActivity() {
                 login.setOnClickListener {
                     loading.visibility = View.VISIBLE
                     loginViewModel.login(username.text.toString(), password.text.toString())
+
+                    analytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundleOf(
+                        FirebaseAnalytics.Param.ITEM_ID to "SOMETHING" ,
+                        FirebaseAnalytics.Param.ITEM_NAME to "Login" ,
+                        FirebaseAnalytics.Param.CONTENT_TYPE to "ExistingUser"
+                    )
+                    )
                 }
             }
+
         }
         
 
@@ -150,6 +164,8 @@ class LoginActivity : AppCompatActivity() {
                     )
                 }
         }
+
+
     }
 
     private fun startLogin(providers: ArrayList<AuthUI.IdpConfig>) {
